@@ -1,0 +1,55 @@
+# GT6 (BCAS25018) 32:9 ultra-wide, 2560x720 target.
+# Keep only the stable entries. Enable exactly ONE via Manage Game Patches.
+Version: 1.2
+
+PPU-dd7ec6f4719ae9938b2e76bed97232ffc9dbdda1:
+  "32:9 UWW (GT6 1.00, all 16)":
+    Games:
+      "Gran Turismo 6":
+        BCAS25018: [ 01.00 ]
+    Author: "gt6-uw"
+    Notes: "Change the 16 compiled 1.7777778f aspect constants to 3.5555556f. Use with GPU Stretch To Display Area."
+    Patch Version: 1.0
+    Patch:
+      - [ bef32, 0x00fbc980, 3.5555556 ]
+      - [ bef32, 0x00fdc1c8, 3.5555556 ]
+      - [ bef32, 0x00fdc1ec, 3.5555556 ]
+      - [ bef32, 0x00fdc6f8, 3.5555556 ]
+      - [ bef32, 0x00fdf690, 3.5555556 ]
+      - [ bef32, 0x00ff4b04, 3.5555556 ]
+      - [ bef32, 0x00ff4b18, 3.5555556 ]
+      - [ bef32, 0x0100531c, 3.5555556 ]
+      - [ bef32, 0x01005a3c, 3.5555556 ]
+      - [ bef32, 0x01012178, 3.5555556 ]
+      - [ bef32, 0x01039aac, 3.5555556 ]
+      - [ bef32, 0x0103d360, 3.5555556 ]
+      - [ bef32, 0x0107c9f8, 3.5555556 ]
+      - [ bef32, 0x0107ca28, 3.5555556 ]
+      - [ bef32, 0x0107d800, 3.5555556 ]
+      - [ bef32, 0x010783d4, 3.5555556 ]
+
+PPU-824c9dd3c8f7de8b5060ec99b06f474de274de35:
+  "32:9 UWW (GT6 1.05, 16 constants)":
+    Games:
+      "Gran Turismo 6":
+        BCAS25018: [ 01.05 ]
+    Author: "gt6-uw"
+    Notes: "Change the 16 compiled 1.7777778f aspect constants to 3.5555556f. Use with GPU Stretch To Display Area."
+    Patch Version: 1.0
+    Patch:
+      - [ bef32, 0x01024cc0, 3.5555556 ]
+      - [ bef32, 0x01044ef8, 3.5555556 ]
+      - [ bef32, 0x01044f1c, 3.5555556 ]
+      - [ bef32, 0x010453f8, 3.5555556 ]
+      - [ bef32, 0x01048374, 3.5555556 ]
+      - [ bef32, 0x01053474, 3.5555556 ]
+      - [ bef32, 0x01053488, 3.5555556 ]
+      - [ bef32, 0x0106497c, 3.5555556 ]
+      - [ bef32, 0x0106504c, 3.5555556 ]
+      - [ bef32, 0x010717a0, 3.5555556 ]
+      - [ bef32, 0x0109edd4, 3.5555556 ]
+      - [ bef32, 0x010a2648, 3.5555556 ]
+      - [ bef32, 0x010dba1c, 3.5555556 ]
+      - [ bef32, 0x010dc7c8, 3.5555556 ]
+      - [ bef32, 0x010dc7f8, 3.5555556 ]
+      - [ bef32, 0x010dd5d0, 3.5555556 ]

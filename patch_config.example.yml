@@ -1,0 +1,10 @@
+# Optional example.
+# RPCS3 normally writes this file itself after Manage Game Patches.
+# Use exactly ONE enabled patch at a time.
+# If your RPCS3 version requires the legacy boolean form:
+
+PPU-dd7ec6f4719ae9938b2e76bed97232ffc9dbdda1:
+  "32:9 UWW (GT6 1.00, all 16)": true
+
+#PPU-824c9dd3c8f7de8b5060ec99b06f474de274de35:
+#  "32:9 UWW (GT6 1.05, 16 constants)": true

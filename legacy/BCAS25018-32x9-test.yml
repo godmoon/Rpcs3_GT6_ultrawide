@@ -1,0 +1,148 @@
+# GT6 (BCAS25018) 32:9 超宽屏 —— 试验补丁集
+#
+# 目标：720P 基准下 32:9（等效 2560x720），真正扩大水平 FOV，不做横向拉伸。
+# 机制：把 EMAIN(1.00) 里被代码引用的 1.7777778f 常量改成 3.5555556f。
+#       游戏内部用变形宽银幕方式渲染（画面被压进 1280x720），
+#       再由 RPCS3 勾选 GPU -> Stretch To Display Area 拉伸到 2560x720，比例才正确。
+#
+# PPU hash：PPU-dd7ec6f4719ae9938b2e76bed97232ffc9dbdda1
+#   = 光盘版 1.00 的 EMAIN（1.05 EMAIN 是 disc-bound NPDRM，解不开，RPCS3 会回落到 1.00）
+#   校验方法：游戏日志里搜 "PPU executable hash"，或用 work/ppuhash.py 计算。
+#
+# 用法：放进 RPCS3 的 patches 目录，右键游戏 → 管理游戏补丁 → 一次只勾一个。
+#       每换一组都必须完全退出游戏再重开（常量在加载时写入内存，热改无效）。
+#
+# 建议顺序：TEST 0（判定常量路线是否有效）→ H → A → I → 其余。
+# 详细依据见 ../工作总结.md 第 4 节地址表。
+
+# 下面这行是补丁引擎版本，不能删，缺了整份文件会被 RPCS3 跳过。
+Version: 1.2
+
+PPU-dd7ec6f4719ae9938b2e76bed97232ffc9dbdda1:
+  "32:9 TEST 0 (all 16 x 1.77778)":
+    Games:
+      "Gran Turismo 6":
+        BCAS25018: [ 01.00 ]
+    Author: "gt6-uw"
+    Notes: "把 16 处 1.7777778f 常量全部改成 3.5555556f。用途：判断'改常量'这条路线是否影响 3D 水平 FOV。无效则转 Cheat Engine 代码路线。"
+    Patch Version: 1.0
+    Patch:
+      - [ bef32, 0x00fbc980, 3.5555556 ]
+      - [ bef32, 0x00fdc1c8, 3.5555556 ]
+      - [ bef32, 0x00fdc1ec, 3.5555556 ]
+      - [ bef32, 0x00fdc6f8, 3.5555556 ]
+      - [ bef32, 0x00fdf690, 3.5555556 ]
+      - [ bef32, 0x00ff4b04, 3.5555556 ]
+      - [ bef32, 0x00ff4b18, 3.5555556 ]
+      - [ bef32, 0x0100531c, 3.5555556 ]
+      - [ bef32, 0x01005a3c, 3.5555556 ]
+      - [ bef32, 0x01012178, 3.5555556 ]
+      - [ bef32, 0x01039aac, 3.5555556 ]
+      - [ bef32, 0x0103d360, 3.5555556 ]
+      - [ bef32, 0x010783d4, 3.5555556 ]
+      - [ bef32, 0x0107c9f8, 3.5555556 ]
+      - [ bef32, 0x0107ca28, 3.5555556 ]
+      - [ bef32, 0x0107d800, 3.5555556 ]
+
+  "32:9 TEST H (camera ctor aspect)":
+    Games:
+      "Gran Turismo 6":
+        BCAS25018: [ 01.00 ]
+    Author: "gt6-uw"
+    Notes: "PDIScene::SimpleCamera 构造函数写入对象 +0xc 的宽高比（0x107c9f8 / 0x107ca28，同表还有 near=0.1 / far=5000 / fovScale=1.0）。最可能的相机默认宽高比来源。"
+    Patch Version: 1.0
+    Patch:
+      - [ bef32, 0x0107c9f8, 3.5555556 ]
+      - [ bef32, 0x0107ca28, 3.5555556 ]
+
+  "32:9 TEST A (getAspect)":
+    Games:
+      "Gran Turismo 6":
+        BCAS25018: [ 01.00 ]
+    Author: "gt6-uw"
+    Notes: "GTCamera::DirectRaceCameraStatus 的虚函数 0x288138 直接 lfs 该常量并返回（return 1.7777778f 的 getAspect）。"
+    Patch Version: 1.0
+    Patch:
+      - [ bef32, 0x01005a3c, 3.5555556 ]
+
+  "32:9 TEST I (resolution branch aspect)":
+    Games:
+      "Gran Turismo 6":
+        BCAS25018: [ 01.00 ]
+    Author: "gt6-uw"
+    Notes: "两处 cmpwi r3,1 分支后取 16:9 的常量（0x84ddc0/0x84ddd0 与 0x7f9ae8），疑似按输出分辨率/扫描模式选择宽高比。"
+    Patch Version: 1.0
+    Patch:
+      - [ bef32, 0x0107d800, 3.5555556 ]
+      - [ bef32, 0x010783d4, 3.5555556 ]
+
+  "32:9 TEST B (display area math)":
+    Games:
+      "Gran Turismo 6":
+        BCAS25018: [ 01.00 ]
+    Author: "gt6-uw"
+    Notes: "0x1012178 在 0x3700bc 处参与显示区域换算（同表 128/0.5/1920/1080/1/1080）。若只影响 HUD 位置，归入 HUD 组。"
+    Patch Version: 1.0
+    Patch:
+      - [ bef32, 0x01012178, 3.5555556 ]
+
+  "32:9 TEST C (multi monitor aspect)":
+    Games:
+      "Gran Turismo 6":
+        BCAS25018: [ 01.00 ]
+    Author: "gt6-uw"
+    Notes: "0xff4b18 在 0x219010 处作为多屏 Monitor 的宽高比传入（同表 2.0/3.0/1.0）。GT6 有 split monitor 功能，可能是这个。"
+    Patch Version: 1.0
+    Patch:
+      - [ bef32, 0x00ff4b18, 3.5555556 ]
+
+  "32:9 TEST D (2D/HUD scale)":
+    Games:
+      "Gran Turismo 6":
+        BCAS25018: [ 01.00 ]
+    Author: "gt6-uw"
+    Notes: "0x1039aac 在 0xda096c 处作为 2D 绘制缩放（邻值 3156.312）。疑似 HUD/UI 比例，观察是否变形。"
+    Patch Version: 1.0
+    Patch:
+      - [ bef32, 0x01039aac, 3.5555556 ]
+
+  "32:9 TEST E (2D pixel coord)":
+    Games:
+      "Gran Turismo 6":
+        BCAS25018: [ 01.00 ]
+    Author: "gt6-uw"
+    Notes: "0xfbc980 在 0xc0edd0 处乘完立刻 fctiwz 转整数，用于屏幕像素坐标换算。"
+    Patch Version: 1.0
+    Patch:
+      - [ bef32, 0x00fbc980, 3.5555556 ]
+
+  "32:9 TEST F (photo camera)":
+    Games:
+      "Gran Turismo 6":
+        BCAS25018: [ 01.00 ]
+    Author: "gt6-uw"
+    Notes: "0xfdf690 在 0x1c05b8 处，拍照/画廊相机（同函数 0x1c0598 有 1.0/f31 分支）。"
+    Patch Version: 1.0
+    Patch:
+      - [ bef32, 0x00fdf690, 3.5555556 ]
+
+  "32:9 TEST G (unknown 0x4cd3e4)":
+    Games:
+      "Gran Turismo 6":
+        BCAS25018: [ 01.00 ]
+    Author: "gt6-uw"
+    Notes: "0x103d360 在 0x4cd3e4 处读入后写栈，用途未定。"
+    Patch Version: 1.0
+    Patch:
+      - [ bef32, 0x0103d360, 3.5555556 ]
+
+  "32:9 TEST J (scene aspect arg)":
+    Games:
+      "Gran Turismo 6":
+        BCAS25018: [ 01.00 ]
+    Author: "gt6-uw"
+    Notes: "0xfdc6f8 在 0x1af154 处作为 f1 传入 0x83d7e8（PDIScene 相关），0xfdc1c8 在 0x19eeb4 处写入全局。"
+    Patch Version: 1.0
+    Patch:
+      - [ bef32, 0x00fdc6f8, 3.5555556 ]
+      - [ bef32, 0x00fdc1c8, 3.5555556 ]
