@@ -18,8 +18,10 @@
 4. 完全退出 RPCS3，重新启动，再运行游戏。
 
 说明：
-- 文件名必须是 `BCAS25018_patch.yml`，RPCS3 只加载这个文件名。
-- 若你已打开 Manage Game Patches，勾选后仍无反应，请重启 RPCS3。
+- 文件名**不限定**为 `BCAS25018_patch.yml`。RPCS3 会加载 `patches/` 目录下所有 `.yml` 文件，文件名随意；能不能匹配到游戏靠的是文件里的 `PPU-<hash>` 键和 `Games` 段，跟文件名无关。
+- 这一点有实际意义：你可以另外放别人的补丁（例如 60fps 补丁）作为独立文件，不需要合并进本文件。
+- 每个补丁文件顶层**必须**有 `Version: 1.2`。缺少这一行时 RPCS3 会直接报 `No 'Version' entry found` 并跳过整个文件，表现是「Manage Game Patches 里一条都看不到」。
+- 若你已打开 Manage Game Patches，勾选后仍无反应，请重启 RPCS3（补丁目录只在启动时扫描）。
 
 ## 3. 推荐 RPCS3 设置
 
@@ -75,7 +77,7 @@
 
 | 问题 | 处理 |
 | --- | --- |
-| Manage Game Patches 里没有 UWW | 确认文件名为 `BCAS25018_patch.yml`；重启 RPCS3 |
+| Manage Game Patches 里没有 UWW | 按顺序查：① 文件顶层有 `Version: 1.2` 吗；② 放对目录了吗（便携版 `rpcs3\patches\`，安装版 `%APPDATA%\rpcs3\patches\`）；③ 游戏序列号是 `BCAS25018` 吗；④ 日志里的 `PPU executable hash` 跟文件里的 `PPU-...` 键一致吗 |
 | 勾选后画面无变化 | 确认 only one patch；确认 `Stretch To Display Area` 已启；重新启动游戏 |
 | 1.00 载入 save 后询问姓名 | 先在 1.05 下打开并覆盖保存，再切回 1.00 |
 | patch 只在 Manage Patches 使用 | 重启 RPCS3 以确保 loader 重新读取补丁文件 |
